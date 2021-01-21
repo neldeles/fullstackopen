@@ -9,11 +9,15 @@ const App = () => {
   // it should add the name to the persons array when add button is clicked
   const addContact = (event) => {
     event.preventDefault()
-    const contact = {
-      name: newName
-    }
+    if (persons.map(person => person.name).includes(newName)) {
+      alert(`${newName} is already added to phonebook`)
+    } else {
+      const contact = {
+        name: newName
+      }
 
-    setPersons(persons.concat(contact))
+      setPersons(persons.concat(contact))
+    }
     setNewName('')
   }
 
@@ -35,8 +39,8 @@ const App = () => {
       </form>
       <h2>Numbers</h2>
       {/* it should display the person name */}
-      {persons.map(name =>
-        <p key={name.name}>{name.name}</p>
+      {persons.map(person =>
+        <p key={person.name}>{person.name}</p>
       )}
     </div>
   )
