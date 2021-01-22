@@ -1,4 +1,7 @@
 import React, { useState } from 'react'
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import DisplayContacts from './components/DisplayContacts'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -11,7 +14,6 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
 
-  // it should add the name to the persons array when add button is clicked
   const addContact = (event) => {
     event.preventDefault()
     if (persons.map(person => person.name).includes(newName)) {
@@ -24,18 +26,17 @@ const App = () => {
 
       setPersons(persons.concat(contact))
     }
+    console.log('contact added')
     setNewName('')
     setNewNumber('')
   }
 
-  // input should change state
   const handleNameChange = (event) => {
     setNewName(event.target.value)
   }
   const handleNumberChange = (event) => {
     setNewNumber(event.target.value)
   }
-
   const handleFilterChange = (event) => {
     setNewFilter(event.target.value)
   }
@@ -45,27 +46,21 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
-      <div>
-        filter shown with <input onChange={handleFilterChange} />
-      </div>
+      <Filter onChange={handleFilterChange} />
+
       <h2>add a new contact</h2>
-      <form onSubmit={addContact}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm
+        onSubmit={addContact}
+        handleNameChange={handleNameChange}
+        handleNumberChange={handleNumberChange}
+        newName={newName}
+        newNumber={newNumber}
+      />
+
       <h2>Numbers</h2>
-      {contactsToShow.map(person =>
-        <p key={person.name}>
-          {person.name} {person.number}
-        </p>
-      )}
+      <DisplayContacts
+        contactList={contactsToShow}
+      />
     </div>
   )
 }
