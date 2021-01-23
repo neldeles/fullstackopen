@@ -8,10 +8,18 @@ const DisplayContact = ({ name, number }) => {
   )
 }
 
-const DisplayContacts = (props) => {
+const DisplayContacts = ({ contactList, newFilter }) => {
+  const contactsToShow =
+    contactList.filter(person =>
+      person.name.toLowerCase()
+        .includes(
+          newFilter.toLowerCase()
+        )
+    )
+
   return (
     <div>
-      {props.contactList.map(person =>
+      {contactsToShow.map(person =>
         <DisplayContact
           key={person.name}
           name={person.name}
