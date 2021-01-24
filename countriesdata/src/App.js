@@ -3,9 +3,7 @@ import axios from 'axios'
 import DisplayCountries from './components/DisplayCountries'
 
 const App = () => {
-  // state for the countries object
   const [countries, setCountries] = useState([])
-  // state for the search field
   const [newFilter, setNewFilter] = useState('')
 
   const hook = () => {

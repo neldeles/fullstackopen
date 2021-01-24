@@ -1,4 +1,5 @@
 import React from 'react'
+import WeatherData from './WeatherData'
 
 const DisplayCountries = ({ countries, newFilter, handleShowClick }) => {
   const countriesToShow =
@@ -35,6 +36,7 @@ const DisplayCountries = ({ countries, newFilter, handleShowClick }) => {
               src={country.flag}
               alt="new"
             />
+            <WeatherData country={country.capital} />
           </div>
         )}
       </div>
