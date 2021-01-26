@@ -52,6 +52,19 @@ const App = () => {
     setNewFilter(event.target.value)
   }
 
+  const deleteContact = (name, id) => {
+    const result = window.confirm(`delete ${name}?`)
+    if (result) {
+      console.log(`deleted ${name}`)
+      personsService.del(id)
+      personsService
+        .getAll()
+        .then(returnedContact => {
+          setPersons(returnedContact)
+        })
+    }
+  }
+
   return (
     <div>
       <h1>Phonebook</h1>
@@ -70,6 +83,7 @@ const App = () => {
       <DisplayContacts
         contactList={persons}
         newFilter={newFilter}
+        deleteContact={deleteContact}
       />
     </div>
   )
