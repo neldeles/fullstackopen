@@ -13,7 +13,17 @@ const create = (newObject) => {
 }
 
 const del = (id) => {
-  const request = axios.delete(`${baseUrl}/${id}`)
+  const url = `${baseUrl}/${id}`
+  const request = axios.delete(url)
+  return request.then(response => console.log(response))
 }
 
-export default { getAll, create, del }
+const update = (updatedContact) => {
+  // replaces id's old number with a new number
+  const url = `${baseUrl}/${updatedContact.id}`
+  const request = axios.put(url, updatedContact)
+  return request.then(response => response.data)
+}
+
+const personsService = { getAll, create, del, update }
+export default personsService

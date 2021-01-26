@@ -23,8 +23,24 @@ const App = () => {
 
   const addContact = (event) => {
     event.preventDefault()
-    if (persons.map(person => person.name).includes(newName)) {
-      alert(`${newName} is already added to phonebook`)
+
+    if (persons.map(person => person.name.toLowerCase()).includes(newName.toLowerCase())) {
+      const result = window.confirm(`${newName} is already added to phonebook. Replace the old number with a new one?`)
+      if (result) {
+        // find the object with the same name
+        const contact = persons.find(p => p.name.toLowerCase() === newName.toLowerCase())
+        // update the contact number of that object
+        const updatedContact = { ...contact, number: newNumber }
+        personsService
+          .update(updatedContact)
+          .then(returnedContact => {
+            setPersons(persons.map(person =>
+              person.id !== contact.id
+                ? person
+                : returnedContact
+            ))
+          })
+      }
     } else {
       const contact = {
         name: newName,
@@ -37,7 +53,6 @@ const App = () => {
           setPersons(persons.concat(returnedContact))
         })
     }
-    console.log('contact added')
     setNewName('')
     setNewNumber('')
   }
@@ -52,15 +67,18 @@ const App = () => {
     setNewFilter(event.target.value)
   }
 
-  const deleteContact = (name, id) => {
+  const handleDelete = (name, id) => {
     const result = window.confirm(`delete ${name}?`)
     if (result) {
       console.log(`deleted ${name}`)
-      personsService.del(id)
       personsService
-        .getAll()
-        .then(returnedContact => {
-          setPersons(returnedContact)
+        .del(id)
+        .then(response => {
+          personsService
+            .getAll()
+            .then(returnedPersons => {
+              setPersons(returnedPersons)
+            })
         })
     }
   }
@@ -83,7 +101,7 @@ const App = () => {
       <DisplayContacts
         contactList={persons}
         newFilter={newFilter}
-        deleteContact={deleteContact}
+        deleteContact={handleDelete}
       />
     </div>
   )
