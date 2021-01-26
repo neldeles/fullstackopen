@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import DisplayContacts from './components/DisplayContacts'
-import SuccessNotif from './components/SuccessNotif'
-import ErrorNotif from './components/ErrorNotif'
+import Notifications from './components/Notification'
 import personsService from './services/persons'
 
 const App = () => {
@@ -11,8 +10,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
-  const [successMessage, setSuccessMessage] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [notification, setNotification] = useState(null)
 
   const hook = () => {
     personsService
@@ -25,37 +23,34 @@ const App = () => {
 
   useEffect(hook, [])
 
+  const notifyWith = (message, type = 'success') => {
+    setNotification({ message, type })
+    setTimeout(() => {
+      setNotification(null)
+    }, 5000)
+  }
+
   const addContact = (event) => {
     event.preventDefault()
 
-    if (persons.map(person => person.name.toLowerCase()).includes(newName.toLowerCase())) {
-      const result = window.confirm(`${newName} is already added to phonebook. Replace the old number with a new one?`)
-      if (result) {
-        // find the object with the same name
-        const contact = persons.find(p => p.name.toLowerCase() === newName.toLowerCase())
+    const existing = persons.find(p => p.name.toLowerCase() === newName.toLowerCase())
+    if (existing) {
+      const ok = window.confirm(`${newName} is already added to phonebook. Replace the old number with a new one?`)
+      if (ok) {
         // update the contact number of that object
-        const updatedContact = { ...contact, number: newNumber }
+        const updatedContact = { ...existing, number: newNumber }
         personsService
           .update(updatedContact)
           .then(returnedContact => {
             setPersons(persons.map(person =>
-              person.id !== contact.id
+              person.id !== existing.id
                 ? person
                 : returnedContact
             ))
-          })
-          .then(success => {
-            console.log(success)
-            setSuccessMessage(`${newName} has been updated.`)
-            setTimeout(() => {
-              setSuccessMessage(null)
-            }, 3000)
+            notifyWith(`${newName} has been updated`)
           })
           .catch(error => {
-            setErrorMessage(`Information of ${newName} has already been removed from server`)
-            setTimeout(() => {
-              setErrorMessage(null)
-            }, 3000)
+            notifyWith(`Information of ${newName} has already been removed from server`, 'error')
           })
       }
     } else {
@@ -68,11 +63,8 @@ const App = () => {
         .create(contact)
         .then(returnedContact => {
           setPersons(persons.concat(returnedContact))
+          notifyWith(`${newName} has been added.`)
         })
-      setSuccessMessage(`${newName} has been added.`)
-      setTimeout(() => {
-        setSuccessMessage(null)
-      }, 3000)
     }
     setNewName('')
     setNewNumber('')
@@ -89,17 +81,14 @@ const App = () => {
   }
 
   const handleDelete = (name, id) => {
-    const result = window.confirm(`delete ${name}?`)
-    if (result) {
+    const ok = window.confirm(`delete ${name}?`)
+    if (ok) {
       console.log(`deleted ${name}`)
       personsService
         .del(id)
         .then(response => {
-          personsService
-            .getAll()
-            .then(returnedPersons => {
-              setPersons(returnedPersons)
-            })
+          setPersons(persons.filter(p => p.id !== id))
+          notifyWith(`Deleted ${name}`)
         })
     }
   }
@@ -107,8 +96,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
-      <SuccessNotif message={successMessage} />
-      <ErrorNotif message={errorMessage} />
+      <Notifications notification={notification} />
       <Filter onChange={handleFilterChange} />
 
       <h2>add a new contact</h2>

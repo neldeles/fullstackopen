@@ -15,7 +15,7 @@ const create = (newObject) => {
 const del = (id) => {
   const url = `${baseUrl}/${id}`
   const request = axios.delete(url)
-  return request.then(response => console.log(response))
+  return request.then(response => response.data)
 }
 
 const update = (updatedContact) => {
