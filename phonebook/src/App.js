@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import DisplayContacts from './components/DisplayContacts'
+import SuccessNotif from './components/SuccessNotif'
 import personsService from './services/persons'
 
 const App = () => {
@@ -9,6 +10,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [successMessage, setSuccessMessage] = useState(null)
 
   const hook = () => {
     personsService
@@ -40,6 +42,10 @@ const App = () => {
                 : returnedContact
             ))
           })
+        setSuccessMessage(`${newName} has been updated.`)
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 3000)
       }
     } else {
       const contact = {
@@ -52,6 +58,10 @@ const App = () => {
         .then(returnedContact => {
           setPersons(persons.concat(returnedContact))
         })
+      setSuccessMessage(`${newName} has been added.`)
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 3000)
     }
     setNewName('')
     setNewNumber('')
@@ -86,6 +96,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      <SuccessNotif message={successMessage} />
       <Filter onChange={handleFilterChange} />
 
       <h2>add a new contact</h2>
