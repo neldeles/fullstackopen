@@ -3,6 +3,7 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import DisplayContacts from './components/DisplayContacts'
 import SuccessNotif from './components/SuccessNotif'
+import ErrorNotif from './components/ErrorNotif'
 import personsService from './services/persons'
 
 const App = () => {
@@ -11,6 +12,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
   const [successMessage, setSuccessMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const hook = () => {
     personsService
@@ -42,10 +44,19 @@ const App = () => {
                 : returnedContact
             ))
           })
-        setSuccessMessage(`${newName} has been updated.`)
-        setTimeout(() => {
-          setSuccessMessage(null)
-        }, 3000)
+          .then(success => {
+            console.log(success)
+            setSuccessMessage(`${newName} has been updated.`)
+            setTimeout(() => {
+              setSuccessMessage(null)
+            }, 3000)
+          })
+          .catch(error => {
+            setErrorMessage(`Information of ${newName} has already been removed from server`)
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 3000)
+          })
       }
     } else {
       const contact = {
@@ -97,6 +108,7 @@ const App = () => {
     <div>
       <h1>Phonebook</h1>
       <SuccessNotif message={successMessage} />
+      <ErrorNotif message={errorMessage} />
       <Filter onChange={handleFilterChange} />
 
       <h2>add a new contact</h2>
